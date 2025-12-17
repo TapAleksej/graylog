@@ -1,0 +1,82 @@
+---
+- name: Ensure cert directory exists
+  file:
+    path: "{{ ssl_cert_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Remove old SSL certificates if present
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ ssl_key_file }}"
+    - "{{ ssl_cert_file }}"
+    - "{{ ssl_csr_file }}"
+    - "{{ ssl_certificate }}"
+    - "{{ ssl_certificate_key }}"
+  ignore_errors: true
+
+- name: Generate private key
+  community.crypto.openssl_privatekey:
+    path: "{{ ssl_key_file }}"
+    size: 4096
+    type: RSA
+    mode: '0600'
+
+
+- name: Generate CSR
+  community.crypto.openssl_csr:
+    path: "{{ ssl_csr_file }}"
+    privatekey_path: "{{ ssl_key_file }}"
+    common_name: "graylog.local"
+    country_name: "RU"
+    organization_name: "Alrexcom"
+    organizational_unit_name: "DevOps"
+    subject_alt_name:
+    - "DNS:{{ graylog_server_name }}"
+    - "IP:{{ ansible_default_ipv4.address }}"
+    - "IP:{{ external_ip }}"
+
+- name: Generate self-signed certificate
+  community.crypto.x509_certificate:
+    path: "{{ ssl_cert_file }}"
+    privatekey_path: "{{ ssl_key_file }}"
+    csr_path: "{{ ssl_csr_file }}"
+    provider: selfsigned
+    selfsigned_not_before: "+0d"
+    selfsigned_not_after: "+365d"
+
+
+- name: Copy ssl.conf
+  become: true
+  copy:
+    src: "../scripts/ssl.conf"
+    dest: "{{ ssl_cert_dir }}/ssl.conf"
+    owner: root
+    group: nginx
+    mode: '0644'
+
+
+- name: Copy cert.pem to diary.crt
+  become: true
+  copy:
+    src: "{{ ssl_cert_file }}"
+    dest: "{{ ssl_certificate }}"
+    owner: root
+    group: nginx
+    mode: '0644'
+    remote_src: true
+
+
+- name: Copy key.pem to diary.key
+  become: true
+  copy:
+    src: "{{ ssl_key_file }}"
+    dest: "{{ ssl_certificate_key }}"
+    owner: root
+    group: nginx
+    mode: '0644'
+    remote_src: true

@@ -1,0 +1,7 @@
+---
+# tasks file for roles/install_graylog
+#  - name: Install docker
+#    include_tasks: install_docker.yml
+
+  - name: Install Graylog
+    include_tasks: install_graylog.yml

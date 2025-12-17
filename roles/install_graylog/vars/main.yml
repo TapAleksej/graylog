@@ -1,0 +1,15 @@
+---
+
+
+
+graylog_root_password: "mypass"
+graylog_local_dir: "/etc/graylog/server"
+
+ssl_cert_dir: "/etc/ssl"
+ssl_cert_file: "{{ ssl_cert_dir }}/cert.pem"
+ssl_key_file: "{{ ssl_cert_dir }}/key.pem"
+ssl_csr_file: "{{ ssl_cert_dir }}/req.csr"
+
+ssl_certificate: "{{ ssl_cert_dir }}/graylog.crt"
+ssl_certificate_key: "{{ ssl_cert_dir }}/graylog.key"
+

@@ -1,0 +1,62 @@
+---
+- name: Ensure directory exists
+  become: true
+  file:
+    path: "{{ graylog_local_dir }}"
+    state: directory
+    owner: alrex
+    group: alrex
+    mode: '0750'
+
+
+# =========================================================
+# 5. SECRETS / PASSWORDS vm.max_map_count=262144
+# =========================================================
+
+- name: Ensure pwgen is installed
+  become: true
+  package:
+    name: pwgen
+    state: present
+
+- name: Generate Graylog password secret
+  become: true
+  command: "pwgen -N 1 -s 96"
+  register: graylog_secret
+  when: graylog_password_secret is not defined or graylog_password_secret == ""
+  changed_when: false
+
+# Устанавливаем секрет, не перезаписывая существующее значение
+- name: Set fact for password secret
+  set_fact:
+    graylog_password_secret: "{{ graylog_secret.stdout if (graylog_secret.stdout is defined) else graylog_password_secret }}"
+
+
+# Генерация SHA256 хеша пароля админа
+- name: Generate SHA2 hash for Graylog admin password
+  become: true
+  shell: "echo -n '{{ graylog_root_password }}' | sha256sum"
+  register: graylog_password_hash
+
+#сохраняем хеш!
+- name: Set Graylog password hash fact
+  set_fact:
+    graylog_root_password_sha2: "{{ graylog_password_hash.stdout.split()[0] }}"
+
+
+# Установка
+- name: Deploy .env
+  template:
+    src: graylog_env.conf.j2
+    dest: "{{ graylog_local_dir }}/.env"
+
+- name: Copy compose
+  copy:
+    src: graylog-compose.yml
+    dest: "{{ graylog_local_dir }}/docker-compose.yml"
+
+
+- name: Start deploy
+  community.docker.docker_compose_v2:
+    project_src: "{{ graylog_local_dir }}"
+    state: present

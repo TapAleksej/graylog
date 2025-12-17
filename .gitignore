@@ -1,0 +1,5 @@
+gitini.sh
+.terraform/
+*.tfstate
+*.tfstate.backup
+secret.tfvars
