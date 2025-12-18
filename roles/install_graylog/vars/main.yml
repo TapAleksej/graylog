@@ -2,6 +2,9 @@
 
 
 DIR_MONITORING: "/etc/graylog/monitoring"
+
+server_name: "graylog"
+graylog_network: "graylognet"
 graylog_root_password: "mypass"
 graylog_local_dir: "/etc/graylog/server"
 
@@ -13,4 +16,4 @@ ssl_csr_file: "{{ ssl_cert_dir }}/req.csr"
 ssl_certificate: "{{ ssl_cert_dir }}/graylog.crt"
 ssl_certificate_key: "{{ ssl_cert_dir }}/graylog.key"
 
-ip_host: "127.0.0.1"
+

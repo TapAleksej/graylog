@@ -35,7 +35,7 @@ processors:
 
 # ---------------------- Output to Graylog Beats Input ------
 output.logstash:
-  hosts: ["{{ ip_host }}:5044"]
+  hosts: ["{{ server_name }}:5044"]
   ssl:
     enabled: false
 

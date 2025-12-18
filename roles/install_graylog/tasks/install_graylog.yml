@@ -17,6 +17,13 @@
     mode: '0750'
 
 
+- name: Ensure Graylog docker network exists
+  community.docker.docker_network:
+    name: "{{ graylog_network }}"
+    driver: bridge
+    state: present
+
+
 # =========================================================
 # 5. SECRETS / PASSWORDS vm.max_map_count=262144
 # =========================================================
