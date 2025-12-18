@@ -1,0 +1,47 @@
+metricbeat.modules:
+
+  # ---------------------- System Metrics ----------------------
+  - module: system
+    period: 10s
+    metricsets:
+      - cpu
+      - load
+      - memory
+      - network
+      - process
+      - process_summary
+      - diskio
+      - filesystem
+      - fsstat
+
+  # ---------------------- Docker Metrics ----------------------
+  - module: docker
+    metricsets:
+      - container
+      - cpu
+      - diskio
+      - healthcheck
+      - info
+      - memory
+      - network
+    hosts: ["unix:///var/run/docker.sock"]
+    period: 10s
+
+# ---------------------- Processors -----------------------
+processors:
+  - add_host_metadata: ~
+  - add_process_metadata: ~
+  # убрано: add_cloud_metadata
+
+# ---------------------- Output to Graylog Beats Input ------
+output.logstash:
+  hosts: ["{{ ip_host }}:5044"]
+  ssl:
+    enabled: false
+
+# ---------------------- Logging (optional) ------------------
+#logging:
+#  level: info
+#  to_files: true
+#  files:
+#    path: /var/log/metricbeat

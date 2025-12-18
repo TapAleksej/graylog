@@ -1,0 +1,44 @@
+---
+
+#  agents for Graylog
+
+- name: Ensure agents directory exists
+  file:
+    path: "{{ DIR_MONITORING }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: Deploy Filebeat config
+  template:
+    src: filebeat.yml.j2
+    dest: "{{ DIR_MONITORING }}/filebeat.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Deploy Metricbeat config
+  template:
+    src: metricbeat.yml.j2
+    dest: "{{ DIR_MONITORING }}/metricbeat.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Deploy docker-compose.yml
+  copy:
+    src: monitor-compose.yml
+    dest: "{{ DIR_MONITORING }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Start monitoring service via Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ DIR_MONITORING }}"
+    state: present

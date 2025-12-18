@@ -1,0 +1,32 @@
+services:
+
+  filebeat:
+    image:  alrexcom/monitor:filebeat918
+    container_name: filebeat
+    user: "root:997"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    command: ["--strict.perms=false"] # строгая проверка прав отключена
+    restart: always
+    networks:
+      - graylog
+
+  metricbeat:
+    image: alrexcom/monitor:metricbeat918
+    container_name: metricbeat
+    user: "root:997"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+    command: ["--strict.perms=false"]
+    restart: always
+    networks:
+      - graylog
+
+networks:
+  graylog:
+    driver: "bridge"

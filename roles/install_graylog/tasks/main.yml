@@ -5,3 +5,7 @@
 
   - name: Install Graylog
     include_tasks: install_graylog.yml
+
+  - name: Install monitoring
+    include_tasks: install_monitoring.yml
+

@@ -1,0 +1,18 @@
+filebeat.inputs:
+  - type: container
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+      - decode_json_fields:
+          fields: ["log"]
+          target: ""
+          overwrite_keys: true
+
+# Graylog Beats Input
+output.logstash:
+  hosts: ["{{ ip_host }}:5044"]
+  ssl:
+    enabled: false   # Graylog Beats input обычно без TLS`
