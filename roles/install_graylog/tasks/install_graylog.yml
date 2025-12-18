@@ -1,4 +1,12 @@
 ---
+- name: Set vm.max_map_count for Graylog / OpenSearch
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    reload: yes
+
+
 - name: Ensure directory exists
   become: true
   file:
