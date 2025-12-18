@@ -18,6 +18,7 @@ services:
     container_name: metricbeat
 #    user: "root:997"
     volumes:
+      - /:/hostfs:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
       - /proc:/hostfs/proc:ro
