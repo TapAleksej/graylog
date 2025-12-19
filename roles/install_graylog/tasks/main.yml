@@ -9,3 +9,7 @@
   - name: Install monitoring
     include_tasks: install_monitoring.yml
 
+  - name: Install sert
+    include_tasks: install_sert.yml
+
+

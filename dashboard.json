@@ -1,0 +1,115 @@
+{
+  "title": "Metricbeat – Host Resources",
+  "description": "CPU, Memory, Disk, Network metrics from Metricbeat",
+  "widgets": [
+    {
+      "type": "timeseries",
+      "title": "CPU Total Usage (%)",
+      "query": {
+        "type": "elasticsearch",
+        "query_string": "system.cpu.total.norm.pct:*"
+      },
+      "timerange": {
+        "type": "relative",
+        "range": 3600
+      },
+      "series": [
+        {
+          "function": "avg",
+          "field": "system.cpu.total.norm.pct",
+          "name": "CPU %",
+          "math_function": "value * 100"
+        }
+      ],
+      "config": {
+        "interval": "minute",
+        "renderer": "line",
+        "unit": "percent"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "RAM Usage (%)",
+      "query": {
+        "type": "elasticsearch",
+        "query_string": "system.memory.used.pct:*"
+      },
+      "timerange": {
+        "type": "relative",
+        "range": 3600
+      },
+      "series": [
+        {
+          "function": "avg",
+          "field": "system.memory.used.pct",
+          "name": "RAM %",
+          "math_function": "value * 100"
+        }
+      ],
+      "config": {
+        "interval": "minute",
+        "renderer": "line",
+        "unit": "percent"
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Disk Usage (%) by Device",
+      "query": {
+        "type": "elasticsearch",
+        "query_string": "system.filesystem.used.pct:*"
+      },
+      "timerange": {
+        "type": "relative",
+        "range": 3600
+      },
+      "series": [
+        {
+          "function": "avg",
+          "field": "system.filesystem.used.pct",
+          "name": "Disk %",
+          "math_function": "value * 100"
+        }
+      ],
+      "config": {
+        "row_groups": [
+          {
+            "field": "system.filesystem.device_name"
+          }
+        ],
+        "unit": "percent"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network Throughput (In / Out)",
+      "query": {
+        "type": "elasticsearch",
+        "query_string": "system.network.in.bytes:* OR system.network.out.bytes:*"
+      },
+      "timerange": {
+        "type": "relative",
+        "range": 3600
+      },
+      "series": [
+        {
+          "function": "sum",
+          "field": "system.network.in.bytes",
+          "name": "IN",
+          "math_function": "rate(value,1)"
+        },
+        {
+          "function": "sum",
+          "field": "system.network.out.bytes",
+          "name": "OUT",
+          "math_function": "rate(value,1)"
+        }
+      ],
+      "config": {
+        "interval": "minute",
+        "renderer": "line",
+        "unit": "bytes_per_sec"
+      }
+    }
+  ]
+}
