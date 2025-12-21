@@ -1,2 +1,26 @@
 ---
 # handlers file for roles/install_graylog
+- name: test nginx config
+  become: true
+  command: nginx -t
+  register: nginx_test
+  changed_when: false
+  failed_when: nginx_test.rc != 0
+
+- name: restart nginx
+  become: true
+  systemd:
+    name: nginx
+    state: restarted
+  listen: "reload nginx"
+
+- name: daemon-reload
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: restart graylog
+  become: true
+  systemd:
+    name: graylog-server
+    state: restarted

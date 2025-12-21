@@ -72,26 +72,6 @@ services:
       - "graylog_data:/usr/share/graylog/data/data"
     restart: "on-failure"
 
-  proxy:
-    image: nginx:alpine
-    labels:
-      - "project=diary"
-    container_name: proxy
-    depends_on:
-      webui:
-        condition: service_healthy
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./ssl.conf:/etc/ssl/ssl.conf
-      - ./diary.crt:/etc/ssl/diary.crt
-      - ./diary.key:/etc/ssl/diary.key
-    restart: always
-    networks:
-      - graylognet
-
 
 networks:
   graylognet:

@@ -1,9 +1,17 @@
 ---
-
+external_ip: "158.160.203.161"
+#"88.214.34.49"
 
 DIR_MONITORING: "/etc/graylog/monitoring"
 
-server_name: "graylog"
+graylog_server_name: "graylog"
+graylog_host: "127.0.0.1"
+
+nginx_log_directory: "/var/log/nginx/graylog"
+nginx_proxy_pass: "http://{{ graylog_host }}:9000"
+nginx_conf_path: "/etc/nginx/conf.d/default.conf"
+
+
 graylog_network: "graylognet"
 graylog_root_password: "mypass"
 graylog_local_dir: "/etc/graylog/server"

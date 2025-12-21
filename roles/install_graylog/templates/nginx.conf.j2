@@ -1,25 +1,27 @@
 server {
+    listen 80;
+    server_name {{ graylog_server_name }} ;
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS reverse proxy for Graylog
+server {
     listen 443 ssl;
     http2 on;
-    server_name "{{ server_name }}" ;
+    server_name {{ graylog_server_name }} ;
 
-    ssl_certificate     /etc/ssl/graylog.crt;
-    ssl_certificate_key /etc/ssl/graylog.key;
+    ssl_certificate     {{ ssl_certificate }};
+    ssl_certificate_key {{ ssl_certificate_key }};
     include /etc/ssl/ssl.conf;
 
-    access_log /var/log/nginx/graylog/access.log;
-    error_log  /var/log/nginx/graylog/error.log;
+    access_log {{ nginx_log_directory }}/access.log;
+    error_log  {{ nginx_log_directory }}/error.log;
 
     # Разрешаем загрузку до 10 МБ
     client_max_body_size 10M;
 
-      location /basic_status {
-        stub_status;
-        access_log off;
-    }
-
     location / {
-        proxy_pass http://127.0.0.1:9000;
+        proxy_pass {{ nginx_proxy_pass }};
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
@@ -27,5 +29,13 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
+
+        # WebSockets
+        #proxy_set_header Upgrade $http_upgrade;
+        #proxy_set_header Connection "";
+
+        #proxy_read_timeout 900;
+        #proxy_send_timeout 900;
+
     }
 }

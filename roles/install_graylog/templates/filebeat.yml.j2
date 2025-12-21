@@ -13,6 +13,6 @@ filebeat.inputs:
 
 # Graylog Beats Input
 output.logstash:
-  hosts: ["{{ server_name }}:5044"]
+  hosts: ["{{ graylog_server_name }}:5044"]
   ssl:
     enabled: false   # Graylog Beats input обычно без TLS`

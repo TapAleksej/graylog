@@ -1,0 +1,43 @@
+---
+
+- name: Install Nginx
+  become: true
+  package:
+    name: nginx
+    state: present
+
+- name: Remove default Nginx config if exists
+  become: true
+  file:
+    path: "{{ nginx_conf_path }}"
+    state: absent
+  ignore_errors: true
+
+
+- name: Check if log folder exists
+  become: true
+  file:
+    path: "{{ nginx_log_directory }}"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0755'
+
+
+- name: Template Graylog configuration file
+  become: true
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_path }}"
+    mode: '0644'
+  notify:
+    - test nginx config
+    - restart nginx
+
+
+- name: Ensure Nginx is enabled and started
+  become: true
+  systemd:
+    name: nginx
+    enabled: true
+    state: started

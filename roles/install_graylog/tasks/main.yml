@@ -3,6 +3,7 @@
 #  - name: Install docker
 #    include_tasks: install_docker.yml
 
+
   - name: Install Graylog
     include_tasks: install_graylog.yml
 
@@ -12,4 +13,6 @@
   - name: Install sert
     include_tasks: install_sert.yml
 
+  - name: Install nginx
+    include_tasks: install_nginx.yml
 
